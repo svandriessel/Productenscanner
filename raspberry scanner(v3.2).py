@@ -18,6 +18,7 @@ productBeschrijving=' '
 global currentProductIndex
 currentProductIndex=None
 photo = PhotoImage(file="welkom.gif")
+productCost=1.00
 
 def loop():
     while 1:
@@ -58,6 +59,7 @@ def volgende_artikel():
             p[1]+=1
             global currentProductIndex
             currentProductIndex=scannedProducts.index(p)
+            addOneToAantal(currentProductIndex)
             select_product()
             break
     if exists==False:    
@@ -66,6 +68,7 @@ def volgende_artikel():
         global currentProductIndex
         currentProductIndex=len(scannedProducts)-1
         select_product()
+        addProductToTable()
 
     
 
@@ -83,6 +86,11 @@ def clear_products():
     picture_label.image=photo2
     global currentProductIndex
     currentProductIndex=None
+
+    row=0
+    for i in range(0, len(productenTabel)-1):
+        removeProduct(row)
+        row=row+1
     print('all clear')
 
 def update_info():
@@ -107,7 +115,7 @@ def select_product():
             photo2 = PhotoImage(file="Kiwi.gif")
         picture_label.configure(image = photo2)
         picture_label.image=photo2
-    
+        
     print(productBeschrijving)
 
 def plusOne():
@@ -127,6 +135,7 @@ def MinusOne():
             select_product()
         elif scannedProducts[currentProductIndex][1]==1:
             scannedProducts.remove(scannedProducts[currentProductIndex])
+            refreshTable()
             global currentProductIndex
             currentProductIndex=None
             global productBeschrijving
@@ -138,22 +147,78 @@ def MinusOne():
             select_product()
 
 def removeProduct(row):
-    row=row+1
-    for i in len(productenTabel[row]):
-        productenTabel[row][column].configure(text=text)# --------------------------------------------------
+    columnNumber=0
+    for columns in productenTabel[row]:
+        changeCel(row, columnNumber, ' ')
+        columnNumber=columnNumber+1
 
 def addOneToAantal(row):
-    row=row+1
-    productenTabel[row][1].configure(text=int (productenTabel[row][1].cget("text"))+1)
+    #row=row+1
+    #productenTabel[row][1].configure(text=int (productenTabel[row][1].cget("text"))+1)
+    nieuwAantal=int (productenTabel[row+1][1].cget("text"))+1
+    print(nieuwAantal)
+    changeCel(row, 1, nieuwAantal)
+    changeCel(row, 3, "€" +  '%.2f' % (nieuwAantal * productCost))
+    
 
 def subtractOneOfAantal(row):
-    row=row+1
-    productenTabel[row][1].configure(text=int (productenTabel[row][1].cget("text"))-1)  
+    #row=row+1
+    #productenTabel[row][1].configure(text=int (productenTabel[row][1].cget("text"))-1)
+    nieuwAantal=int (productenTabel[row+1][1].cget("text"))-1
+    print(nieuwAantal)
+    changeCel(row, 1, nieuwAantal)
+    changeCel(row, 3, "€" +  '%.2f' % (nieuwAantal * productCost))
 
+def addProductToTable():
+    changeCel(currentProductIndex, 0, productBeschrijving)
+    changeCel(currentProductIndex, 1, "1")
+    changeCel(currentProductIndex, 2, "€" + '%.2f' % (productCost))
+    changeCel(currentProductIndex, 3, "€" + '%.2f' % (productCost))
+    
 def changeCel(row, column, text):
     row=row+1
     productenTabel[row][column].configure(text=text)
+
+def changeRow(row, textc0, textc1, textc2, textc3):
+    changeCel(row, 0, textc0)
+    changeCel(row, 1, textc1)
+    changeCel(row, 2, textc2)
+    changeCel(row, 3, textc3)
+
+def refreshTable():
+    i=1
+##    global productenTabel
+##    print(productenTabel)
+##    for rows in productenTabel:
+##        if i>currentProductIndex & i<len(productenTabel):
+##            j=0
+##            for columns in (0, len(productenTabel[i])):
+##                productenTabel[i][columns].grid_configure(row=i+1, column=j)
+##                j=j+1
+##
+##        i=i+1
+##        
+##
+##
+##    productenTabel+=[productenTabel.pop(currentProductIndex+1)]
+##    i=0
+##    for columns in productenTabel[currentProductIndex+1]:
+##        productenTabel.append(columns[i])
+##        productenTabel[currentProductIndex+1][i].grid_remove()
+##        i=i+1
+##    productenTabel.pop(currentProductIndex)
     
+##    tableRow=[]
+##    for j in range(4):
+##        l = Label(listFrame, text='', font=("Arial", 10), fg='#0080FF', relief=FLAT, bg='white')
+##        l.grid(row=i, column=j, sticky=NSEW, padx=1, pady=1)
+##        tableRow.append(l)
+##    productenTabel.append(tableRow)
+    
+##    row=0
+##    for products in scannedProducts:
+##        changeRow(row, products[0], products[1], "€" + str(productCost), "€" + str(productCost*products[1]))
+    print("refreshed")
 
 #top_label = Label(root, text='Scan het volgende artikel', height=2, width=113, bg='light blue')
 #top_label.grid(row=0, column=0, columnspan=9)
@@ -201,10 +266,10 @@ productenTabel[0][1].configure(text="Aantal", width=7, font=("Arial", 10, "bold"
 productenTabel[0][2].configure(text="Prijs", width=7, font=("Arial", 10, "bold"), fg='#0080FF')
 productenTabel[0][3].configure(text="Totaal", width=7, font=("Arial", 10, "bold"), fg='#0080FF')
 
-changeCel(0, 0, "Melk")
-changeCel(0, 1, "1")
-changeCel(0, 2, "€2,50")
-changeCel(0, 3, "€2,50")
+#changeCel(0, 0, "Melk")
+#changeCel(0, 1, "1")
+#changeCel(0, 2, "€2,50")
+#changeCel(0, 3, "€2,50")
 
 plusPhoto = PhotoImage(file="plus4.gif")
 plus1 = Button(root, text="plus", image=plusPhoto, fg="blue", width=100, height=150, activebackground='white', relief=SUNKEN, borderwidth=0, bg='white', command = plusOne)
